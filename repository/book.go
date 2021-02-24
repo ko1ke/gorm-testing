@@ -13,11 +13,7 @@ type BookRepository interface {
 	Create(string, string) (*model.Book, error)
 }
 
-func (bookRepository BookRepositoryImpl) Create(title string, author string) (*model.Book, error) {
-	book := model.Book{
-		Title:  title,
-		Author: author,
-	}
+func (bookRepository BookRepositoryImpl) Create(book model.Book) (*model.Book, error) {
 	err := bookRepository.DB.Create(&book).Error
 	return &book, err
 }

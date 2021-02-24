@@ -5,6 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/moritamori/gorm-testing/model"
 	"github.com/moritamori/gorm-testing/repository"
 )
 
@@ -15,11 +16,15 @@ func main() {
 	}
 	bookRepository := repository.BookRepositoryImpl{DB: db}
 
-	book, err := bookRepository.Create("Go言語の本", "誰か")
+	book := model.Book{
+		Title:  "Go言語の本",
+		Author: "誰か",
+	}
+	newBook, err := bookRepository.Create(book)
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Printf("Title: %s, Author: %s\n", book.Title, book.Author)
+		fmt.Printf("Title: %s, Author: %s\n", newBook.Title, newBook.Author)
 	}
 }
