@@ -15,8 +15,7 @@ func main() {
 	}
 	bookRepository := repository.BookRepositoryImpl{DB: db}
 
-	bookRepository.Create("Go言語の本", "誰か")
-	book, err := bookRepository.Get(1)
+	book, err := bookRepository.Create("Go言語の本", "誰か")
 
 	if err != nil {
 		fmt.Println(err)
