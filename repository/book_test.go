@@ -4,35 +4,45 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jinzhu/gorm"
 	"github.com/moritamori/gorm-testing/model"
 	"github.com/stretchr/testify/suite"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
+// テストスイートの構造体
 type BookRepositoryTestSuite struct {
 	suite.Suite
 	bookRepository BookRepositoryImpl
 	mock           sqlmock.Sqlmock
 }
 
+// テストのセットアップ
+// (sqlmockをNew、Gormで発行されるクエリがモックに送られるように)
 func (suite *BookRepositoryTestSuite) SetupTest() {
 	db, mock, _ := sqlmock.New()
 	suite.mock = mock
 	bookRepository := BookRepositoryImpl{}
-	bookRepository.DB, _ = gorm.Open("postgres", db)
+	bookRepository.DB, _ = gorm.Open(postgres.New(postgres.Config{
+		Conn: db,
+	}), &gorm.Config{})
 	suite.bookRepository = bookRepository
 }
 
+// テスト終了時の処理（データベース接続のクローズ）
 func (suite *BookRepositoryTestSuite) TearDownTest() {
-	suite.bookRepository.DB.Close()
+	db, _ := suite.bookRepository.DB.DB()
+	db.Close()
 }
 
+// テストスイートの実行
 func TestBookRepositoryTestSuite(t *testing.T) {
 	suite.Run(t, new(BookRepositoryTestSuite))
 }
 
+// Createのテスト
 func (suite *BookRepositoryTestSuite) TestCreate() {
-	suite.Run("書籍を登録", func() {
+	suite.Run("create a book", func() {
 		rows := sqlmock.NewRows([]string{"id"}).AddRow(1)
 		suite.mock.ExpectBegin()
 		suite.mock.ExpectQuery(`INSERT INTO "books"`).WillReturnRows(rows)

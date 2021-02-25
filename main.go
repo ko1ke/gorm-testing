@@ -3,25 +3,29 @@ package main
 import (
 	"fmt"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/moritamori/gorm-testing/model"
 	"github.com/moritamori/gorm-testing/repository"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
-	db, err := gorm.Open("postgres", "dbname=gormtesting password=mypassword")
+	// DB接続を開く
+	url := "dbname=gormtesting password=mypassword"
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	bookRepository := repository.BookRepositoryImpl{DB: db}
 
+	// リポジトリ(`repository/book.go`)を介して、書籍(book)のデータを登録
+	bookRepo := repository.BookRepositoryImpl{DB: db}
 	book := model.Book{
 		Title:  "Go言語の本",
 		Author: "誰か",
 	}
-	newBook, err := bookRepository.Create(book)
+	newBook, err := bookRepo.Create(book)
 
+	// エラーが発生しなければ、登録した書籍データの内容を標準出力
 	if err != nil {
 		fmt.Println(err)
 	} else {
