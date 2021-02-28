@@ -19,16 +19,16 @@ func main() {
 
 	// リポジトリ(`repository/book.go`)を介して、書籍(book)のデータを登録
 	bookRepo := repository.BookRepositoryImpl{DB: db}
-	book := model.Book{
+	book := &model.Book{
 		Title:  "Go言語の本",
 		Author: "誰か",
 	}
-	newBook, err := bookRepo.Create(book)
+	err = bookRepo.Create(book)
 
-	// エラーが発生しなければ、登録した書籍データの内容を標準出力
+	// エラーが発生しないかチェック
 	if err != nil {
 		fmt.Println(err)
-	} else {
-		fmt.Printf("Title: %s, Author: %s\n", newBook.Title, newBook.Author)
+		return
 	}
+	fmt.Println("success!")
 }

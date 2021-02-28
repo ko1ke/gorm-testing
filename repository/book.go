@@ -10,10 +10,10 @@ type BookRepositoryImpl struct {
 }
 
 type BookRepository interface {
-	Create(string, string) (*model.Book, error)
+	Create(book *model.Book) error
 }
 
-func (bookRepo BookRepositoryImpl) Create(book model.Book) (*model.Book, error) {
-	err := bookRepo.DB.Create(&book).Error
-	return &book, err
+func (bookRepo BookRepositoryImpl) Create(book *model.Book) error {
+	cx := bookRepo.DB.Create(book)
+	return cx.Error
 }
