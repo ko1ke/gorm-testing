@@ -1,0 +1,42 @@
+# docker-compose.yml
+version: "3"
+services:
+  api:
+    container_name: gorm-testing
+    build:
+      context: .
+      dockerfile: ./Dockerfile-golang
+    ports:
+      - 4000:4000
+    depends_on:
+      - postgres-db
+      - redis
+    volumes:
+      - ./api:/api
+
+  postgres-db:
+    container_name: postgres-db
+    build:
+      context: .
+      dockerfile: ./Dockerfile-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=gorm-testing
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_volume:/var/lib/postgresql/data
+  # pgweb:
+  #   image: donnex/pgweb
+  #   restart: always
+  #   command: -s --bind=0.0.0.0 --listen=8080 --url postgresql://postgres:secret@postgres/gorm-testing?sslmode=disable
+  #   links:
+  #     - postgres:postgres
+  #   ports:
+  #     - "9232:8080"
+  #   depends_on:
+  #     - postgres-db
+
+volumes:
+  postgres_volume:

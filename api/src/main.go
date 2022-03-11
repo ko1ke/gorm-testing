@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/moritamori/gorm-testing/model"
 	"github.com/moritamori/gorm-testing/repository"
 	"gorm.io/driver/postgres"
@@ -10,11 +13,18 @@ import (
 )
 
 func main() {
+	err := godotenv.Load(".env")
+
 	// DB接続を開く
-	url := "dbname=gormtesting password=mypassword"
-	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		log.Printf("failed to load .env: %v", err)
+	}
+	dsnString := os.Getenv("DATABASE_URL")
+
+	db, err := gorm.Open(postgres.Open(dsnString), &gorm.Config{})
+	if err != nil {
+
+		panic("failed to connect database:" + dsnString)
 	}
 
 	// リポジトリ(`repository/book.go`)を介して、書籍(book)のデータを登録
